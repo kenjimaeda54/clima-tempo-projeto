@@ -1,5 +1,5 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: "http://apiadvisor.climatempo.com.br/api/",
+  baseURL: "https://community-open-weather-map.p.rapidapi.com/forecast",
 });

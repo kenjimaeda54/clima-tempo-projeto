@@ -5,10 +5,14 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { style } from "./style";
 import { color } from "../../global/color";
 
-export const Header = () => {
+type HeaderProps = {
+  handleNavigation: () => void;
+};
+
+export const Header = ({ handleNavigation }: HeaderProps) => {
   return (
     <View style={style.container}>
-      <BorderlessButton>
+      <BorderlessButton onPress={handleNavigation}>
         <FontAwesome5
           style={style.icon}
           name="arrow-left"

@@ -47,10 +47,26 @@ export const style = StyleSheet.create({
   },
   textInput: {
     backgroundColor: color.blueSecondary,
-    width: "100%",
+    width: "93%",
     height: 27,
     borderRadius: 4,
-    paddingHorizontal: 7,
+    paddingHorizontal: 20,
     color: color.with,
+  },
+  buttonFooter: {
+    backgroundColor: color.blueSecondary,
+    width: "93%",
+    height: 27,
+    marginTop: 20,
+    borderRadius: 4,
+    color: color.with,
+    display: "flex",
+    alignItems: `center`,
+    justifyContent: `center`,
+  },
+  texFooter: {
+    fontFamily: fonts.kanit_Ligth,
+    color: color.with,
+    fontSize: 11,
   },
 });

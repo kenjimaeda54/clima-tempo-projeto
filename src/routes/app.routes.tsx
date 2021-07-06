@@ -16,8 +16,8 @@ export const AppRoutes = () => {
         },
       }}
     >
-      <Screen name="City" component={FilterCity} />
       <Screen name="Home" component={HomeScreen} />
+      <Screen name="City" component={FilterCity} />
     </Navigator>
   );
 };
