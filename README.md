@@ -133,3 +133,12 @@ TOKEN=
   - Atomics
   - Media Screen
   - Tipagem
+ 
+ ### Dependencias
+ - [App loading](https://docs.expo.io/versions/latest/sdk/app-loading/)
+ - [Google Fonts](https://docs.expo.io/guides/using-custom-fonts/#using-a-google-font)
+ - [Axios](https://github.com/axios/axios)
+ - [React Native](https://reactnavigation.org/docs/getting-started/)
+ - [Stack Stack](https://reactnavigation.org/docs/hello-react-navigation)
+ - [Graficos SVG](https://github.com/JesperLekland/react-native-svg-charts)
+ - [Count Up](https://github.com/vydimitrov/use-count-up)
