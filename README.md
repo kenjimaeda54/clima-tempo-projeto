@@ -50,7 +50,7 @@ assim retorno os dias da semana de acordo com o índice da temperatura, garantin
  também retornarei os 2 próximos dias, aquela famosa previsão do tempo, no meu caso são para 3 dias. </br>
  Parâmetro recebido será retornado formatado, porque ao receber day, acesso as chaves do objeto com week[day] </br>
  
- ```typescript
+ ```typeScript
    
   const weekDay = filterWeekCurrent?.map((days) => {
         const week = {
