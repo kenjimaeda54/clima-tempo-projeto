@@ -76,7 +76,7 @@ assim retorno os dias da semana de acordo com o índice da temperatura, garantin
  sem utlizar includes ficaria repleto de or .
  
  
-  ```type script
+  ```typeScript
       const getDay = new Date().getDay();
       const getTomorrow = new Date().getDay() + 1;
       const getAfterTomorrow = new Date().getDay() + 2;
