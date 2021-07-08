@@ -37,12 +37,7 @@ export const HomeScreen = () => {
 
   return (
     <View style={style.container}>
-      <View style={style.viewHeader}>
-        <View style={style.viewHeaderContent}>
-          <IconCloud name="cloud-showers-heavy" />
-          <Text style={style.textProps}>São Paulo 15 Cº F</Text>
-        </View>
-      </View>
+      <View style={style.viewHeader}></View>
       <Text style={style.errorInput}>{errorInput && errorInput}</Text>
       <View style={style.viewMain}>
         <Text style={style.textProps}>

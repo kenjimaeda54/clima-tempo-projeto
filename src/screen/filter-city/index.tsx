@@ -7,8 +7,9 @@ import { IconCloud } from "../../components/icon-cloud";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { DataProps, Temperature } from "../../components/temperature";
 import { CountUp } from "use-count-up";
-import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import { Loader } from "../../components/loader";
+import { icon } from "../../util/icon";
 
 type ParamsProps = {
   params: string;
@@ -28,6 +29,7 @@ type RequestProps = {
 type ObservationProps = {
   condition: {
     temperature: number;
+    text: string;
   };
 };
 
@@ -59,6 +61,7 @@ export const FilterCity = () => {
   const [mountedCelsius, setMountedCelsius] = useState(false);
   const [mountedFahrenheit, setMountedFahrenheit] = useState(false);
   const [formated, setFormated] = useState(true);
+  const [iconRequest, setIconRequest] = useState("");
   const [fetchArrayWeek, setFetchArrayWeek] = useState<DataProps>(
     {} as DataProps
   );
@@ -300,6 +303,30 @@ export const FilterCity = () => {
     navigation.goBack();
   };
 
+  useEffect(() => {
+    const iconSelected = () => {
+      const iconsRequest = {
+        Clear: icon.clear,
+      } as unknown as string;
+      const iconChoose = (text: string) => {
+        return iconsRequest[text as any]
+          ? setIconRequest(iconsRequest[text as any])
+          : setIconRequest(icon.partly);
+      };
+      if (opacityFahrenheit) {
+        const iconSelected =
+          fetchRequestFahrenheit?.current_observation.condition.text;
+        return iconChoose(iconSelected as string);
+      }
+      if (fetchRequestCelsius) {
+        const iconSelected =
+          fetchRequestCelsius?.current_observation.condition.text;
+        return iconChoose(iconSelected as string);
+      }
+    };
+    iconSelected();
+  }, [fetchRequestFahrenheit, fetchRequestCelsius]);
+
   return (
     <React.Fragment>
       {loading ? (
@@ -339,7 +366,7 @@ export const FilterCity = () => {
               </BorderlessButton>
             </View>
             <View style={style.iconHeader}>
-              <IconCloud name="cloud-moon-rain" />
+              <IconCloud name={iconRequest} />
               <Text style={style.textCity}>
                 {fetchRequestFahrenheit?.location.city ||
                   fetchRequestCelsius?.location.city}
