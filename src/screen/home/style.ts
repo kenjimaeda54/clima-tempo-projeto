@@ -69,4 +69,14 @@ export const style = StyleSheet.create({
     color: color.with,
     fontSize: 11,
   },
+  errorInput: {
+    display: "flex",
+    width: "100%",
+    fontSize: 17,
+    fontWeight: "bold",
+    paddingHorizontal: 40,
+    color: "#ff0000",
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });

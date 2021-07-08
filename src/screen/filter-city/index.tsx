@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Header } from "../../components/header";
-import { View, Text } from "react-native";
+import { View, Text, Alert } from "react-native";
 import { BorderlessButton } from "react-native-gesture-handler";
 import { style } from "./style";
 import { IconCloud } from "../../components/icon-cloud";
@@ -21,6 +21,18 @@ const { HOST } = process.env;
 string `${variável de ambiente} ` */
 type RequestProps = {
   forecasts: ForecastsProps;
+  current_observation: ObservationProps;
+  location: LocationProps;
+};
+
+type ObservationProps = {
+  condition: {
+    temperature: number;
+  };
+};
+
+type LocationProps = {
+  city: string;
 };
 
 type ForecastsProps = {
@@ -35,22 +47,27 @@ export const FilterCity = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { params } = route.params as ParamsProps;
-  const [grausCelsius, setGrausCelsius] = useState(20);
+  const [grausCelsius, setGrausCelsius] = useState(0);
   const [grausFahrenheit, setGrausFahrenheit] = useState(0);
   const [opacityFahrenheit, setOpacityFahrenheit] = useState(false);
   const [opacityCelsius, setOpacityCelsius] = useState(true);
   const [loading, setLoading] = useState(true);
-  const [fetchRequest, setFetchRequest] = useState<RequestProps>();
-  const [mounted, setMounted] = useState(false);
+  const [fetchRequestCelsius, setFetchRequestCelsius] =
+    useState<RequestProps>();
+  const [fetchRequestFahrenheit, setFetchRequestFahrenheit] =
+    useState<RequestProps>();
+  const [mountedCelsius, setMountedCelsius] = useState(false);
+  const [mountedFahrenheit, setMountedFahrenheit] = useState(false);
+  const [formated, setFormated] = useState(true);
   const [fetchArrayWeek, setFetchArrayWeek] = useState<DataProps>(
     {} as DataProps
   );
 
-  const requestApi = () => {
+  const requestApiCelsius = () => {
     const options = {
       method: "GET",
       url: "https://yahoo-weather5.p.rapidapi.com/weather",
-      params: { location: "sao paulo", format: "json", u: "c" },
+      params: { location: params, format: "json", u: "c" },
       headers: {
         "x-rapidapi-key": `${TOKEN}`,
         "x-rapidapi-host": `${HOST}`,
@@ -59,24 +76,49 @@ export const FilterCity = () => {
     axios
       .request(options)
       .then((response) => {
-        setFetchRequest(response.data);
-        setMounted(true);
+        setFetchRequestCelsius(response.data);
+        setMountedCelsius(true);
       })
-      .catch((error) => {
-        alert(error);
+      .catch(() => {
+        Alert.alert(
+          "Atenção",
+          "Nao encontramos a cidade,retorna e tenta novamente,digite apenas o nome da cidade sem o estado",
+          [
+            {
+              text: "Voltar e tentar novamente",
+              onPress: () => handleGoBack(),
+            },
+          ]
+        );
       });
   };
 
+  const requestApiFahrenheit = () => {
+    const options = {
+      method: "GET",
+      url: "https://yahoo-weather5.p.rapidapi.com/weather",
+      params: { location: params, format: "json", u: "f" },
+      headers: {
+        "x-rapidapi-key": `${TOKEN}`,
+        "x-rapidapi-host": `${HOST}`,
+      },
+    } as AxiosRequestConfig;
+    axios.request(options).then((response) => {
+      setFetchRequestFahrenheit(response.data);
+      setMountedFahrenheit(true);
+    });
+  };
+
   useEffect(() => {
-    if (!mounted) {
-      requestApi();
+    if (!mountedCelsius && mountedFahrenheit === false) {
+      requestApiCelsius();
     }
-  }, [fetchRequest]);
+  }, [fetchRequestCelsius]);
 
   useEffect(() => {
     const week = () => {
-      const dayWeek = (day: any) => {
-        const week: any = {
+      const dayWeek = (day: number) => {
+        const week = {
           1: "Mon",
           2: "Tue",
           3: "Wed",
@@ -84,13 +126,101 @@ export const FilterCity = () => {
           5: "Fri",
           6: "Sat",
           7: "Sun",
+        } as unknown as string;
+        return week[day] || "Nao foi possível localizar a semana";
+      };
+
+      const getDay = new Date().getDay();
+      const getTomorrow = new Date().getDay() + 1;
+      const getAfterTomorrow = new Date().getDay() + 2;
+      const weekCurrent = fetchRequestCelsius?.forecasts.filter((weeks) => {
+        if (
+          [
+            dayWeek(getDay),
+            dayWeek(getTomorrow),
+            dayWeek(getAfterTomorrow),
+          ].includes(weeks.day)
+        ) {
+          return weeks;
+        }
+      });
+      const filterWeekCurrent = weekCurrent?.slice(0, 3);
+      /*com slice eu retorno os itens dos indices quero pegar
+      exemplo aqui quero pegar do inicio ate o indicie 3    */
+      const weekDay = filterWeekCurrent?.map((days) => {
+        const week = {
+          Mon: "Seg",
+          Tue: "Ter",
+          Wed: "Quar",
+          Thu: "Quin",
+          Fri: "Sex",
+          Sat: "Sab",
+          Sun: "Dom",
+        } as unknown as string;
+        const getFormatedDay = (day: string) => {
+          return week[day as any] && week[day as any];
         };
+        const dayCurrent = days.day;
+        return getFormatedDay(dayCurrent);
+      }) as string[];
+      const temperatureMiddleCurrent = filterWeekCurrent?.map(
+        (temperature, index) => {
+          const days = (day: number) => {
+            const weeks = {
+              0: (temperature.high + temperature.low) / 2,
+              1: (temperature.high + temperature.low) / 2,
+              2: (temperature.high + temperature.low) / 2,
+            } as unknown as number[];
+
+            return weeks[day];
+          };
+          return days(index);
+        }
+      ) as number[];
+      const temperatureHigh = filterWeekCurrent?.reduce((acc, value) => {
+        if (acc > value.high) return acc;
+        return value.high;
+      }, 0) as number;
+      const temperatureLow = filterWeekCurrent?.reduce((acc, value) => {
+        if (acc < value.low) return value.low;
+        return acc;
+      }, 0) as number;
+
+      const temperatureCurrent = fetchRequestCelsius?.current_observation
+        .condition.temperature as number;
+      setGrausCelsius(temperatureCurrent);
+
+      setFetchArrayWeek({
+        temperatureHigh,
+        temperatureLow,
+        weekDay,
+        temperatureMiddleCurrent,
+      });
+      setLoading(false);
+    };
+    if (mountedCelsius && mountedFahrenheit === false) {
+      week();
+    }
+  }, [fetchRequestCelsius]);
+
+  useEffect(() => {
+    const week = () => {
+      const dayWeek = (day: number) => {
+        const week = {
+          1: "Mon",
+          2: "Tue",
+          3: "Wed",
+          4: "Thu",
+          5: "Fri",
+          6: "Sat",
+          7: "Sun",
+        } as unknown as string;
         return week[day] || "Nao foi possível localizar a semana";
       };
       const getDay = new Date().getDay();
       const getTomorrow = new Date().getDay() + 1;
       const getAfterTomorrow = new Date().getDay() + 2;
-      const weekCurrent = fetchRequest?.forecasts.filter((weeks) => {
+      const weekCurrent = fetchRequestFahrenheit?.forecasts.filter((weeks) => {
         if (
           [
             dayWeek(getDay),
@@ -107,6 +237,20 @@ export const FilterCity = () => {
       const weekDay = filterWeekCurrent?.map((days) => {
         return days.day;
       }) as string[];
+      const temperatureMiddleCurrent = filterWeekCurrent?.map(
+        (temperature, index) => {
+          const days = (day: number) => {
+            const weeks = {
+              0: (temperature.high + temperature.low) / 2,
+              1: (temperature.high + temperature.low) / 2,
+              2: (temperature.high + temperature.low) / 2,
+            } as unknown as number[];
+
+            return weeks[day];
+          };
+          return days(index);
+        }
+      ) as number[];
       const temperatureHigh = filterWeekCurrent?.reduce((acc, value) => {
         if (acc > value.high) return acc;
         return value.high;
@@ -116,28 +260,44 @@ export const FilterCity = () => {
         return acc;
       }, 0) as number;
 
+      const temperatureCurrent = fetchRequestFahrenheit?.current_observation
+        .condition.temperature as number;
+      setGrausFahrenheit(temperatureCurrent);
+
       setFetchArrayWeek({
         temperatureHigh,
         temperatureLow,
         weekDay,
+        temperatureMiddleCurrent,
       });
       setLoading(false);
     };
-    if (mounted) {
+    if (mountedFahrenheit) {
       week();
     }
-  }, [fetchRequest]);
+  }, [fetchRequestFahrenheit]);
 
   const handleCelsius = () => {
     setOpacityFahrenheit(false);
     setOpacityCelsius(true);
+    setMountedFahrenheit(false);
+    setMountedFahrenheit(false);
+    setFormated(true);
+    setLoading(true);
+    requestApiCelsius();
   };
 
   const handleFahrenheit = () => {
-    setOpacityCelsius(false);
     setOpacityFahrenheit(true);
-    const Fahrenheit = grausCelsius * (1.8 + 32);
-    setGrausFahrenheit(Fahrenheit);
+    setOpacityCelsius(false);
+    setLoading(true);
+    setFormated(false);
+    setMountedFahrenheit(true);
+    requestApiFahrenheit();
+  };
+
+  const handleGoBack = () => {
+    navigation.goBack();
   };
 
   return (
@@ -147,19 +307,21 @@ export const FilterCity = () => {
       ) : (
         <View style={style.container}>
           <View>
-            <Header handleNavigation={() => console.log("oi")} />
+            <Header handleNavigation={handleGoBack} />
             <View style={style.viewPresentation}>
               <Text style={style.textTemperatureReal}>
                 <CountUp
                   end={opacityCelsius ? grausCelsius : grausFahrenheit}
                   isCounting
+                  duration={3.7}
+                  easing="linear"
                 />
               </Text>
               <BorderlessButton onPress={handleFahrenheit}>
                 <Text
                   style={[
                     style.unity,
-                    opacityFahrenheit ? { opacity: 1 } : { opacity: 0.5 },
+                    opacityFahrenheit ? { opacity: 1 } : { opacity: 0.3 },
                   ]}
                 >
                   °f
@@ -169,7 +331,7 @@ export const FilterCity = () => {
                 <Text
                   style={[
                     style.unity,
-                    opacityCelsius ? { opacity: 1 } : { opacity: 0.5 },
+                    opacityCelsius ? { opacity: 1 } : { opacity: 0.3 },
                   ]}
                 >
                   °c
@@ -178,8 +340,12 @@ export const FilterCity = () => {
             </View>
             <View style={style.iconHeader}>
               <IconCloud name="cloud-moon-rain" />
+              <Text style={style.textCity}>
+                {fetchRequestFahrenheit?.location.city ||
+                  fetchRequestCelsius?.location.city}
+              </Text>
             </View>
-            <Temperature requestData={fetchArrayWeek} />
+            <Temperature formated={formated} requestData={fetchArrayWeek} />
           </View>
         </View>
       )}

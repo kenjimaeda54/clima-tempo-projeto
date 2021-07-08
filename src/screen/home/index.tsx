@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TextInput } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
 import { style } from "./style";
@@ -10,9 +10,29 @@ import { useNavigation } from "@react-navigation/native";
 export const HomeScreen = () => {
   const navigation = useNavigation();
   const [params, setParams] = useState("");
+  const [errorInput, setErrorInput] = useState("");
+
+  const handleSuccess = () => {
+    navigation.navigate("City", { params });
+    setErrorInput("");
+    setParams("");
+  };
 
   const handleText = () => {
-    navigation.navigate("City", { params });
+    const checkInput = {
+      0: "Por favor precisa inserir algo no campo",
+      1: "Por favor precisa digitar mais que apenas 1 letra",
+      2: "Por favor precisa digitar mais que apenas 2 letras",
+      3: "Por favor precisa digitar mais que apenas 3 letras",
+      4: "Por favor precisa digitar mais que apenas 4 letras",
+    } as unknown as string;
+    const getCheckInput = (text: number) => {
+      return checkInput[text]
+        ? setErrorInput(checkInput[letterNumber])
+        : handleSuccess();
+    };
+    const letterNumber = params.length;
+    return getCheckInput(letterNumber);
   };
 
   return (
@@ -23,6 +43,7 @@ export const HomeScreen = () => {
           <Text style={style.textProps}>São Paulo 15 Cº F</Text>
         </View>
       </View>
+      <Text style={style.errorInput}>{errorInput && errorInput}</Text>
       <View style={style.viewMain}>
         <Text style={style.textProps}>
           Escreva o nome da cidade que deseja pesquisar
@@ -39,6 +60,7 @@ export const HomeScreen = () => {
           style={style.textInput}
           autoFocus
           maxLength={30}
+          value={params}
           onChangeText={setParams}
         />
         <RectButton onPress={handleText} style={style.buttonFooter}>

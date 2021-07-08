@@ -12,6 +12,8 @@ export const style = StyleSheet.create({
     flexDirection: "row",
   },
   axiosX: {
+    marginLeft: 10,
     height: 18,
+    padding: 5,
   },
 });

@@ -58,4 +58,11 @@ export const style = StyleSheet.create({
     lineHeight: 25,
     marginLeft: 10,
   },
+  textCity: {
+    marginTop: 10,
+    fontFamily: fonts.Kanit_Medium,
+    color: color.with,
+    fontSize: 12,
+    lineHeight: 20,
+  },
 });
