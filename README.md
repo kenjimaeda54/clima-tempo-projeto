@@ -1,7 +1,7 @@
 # clima-tempo-projeto.
 Projeto consumindo API,yahoo do clima e tempo.
 
-### Uso da API da yahoo,clima e tempo
+### Uso da [API](https://developer.yahoo.com/weather/) da yahoo,clima e tempo
   
  
 ## Tabelas de conteudos 
@@ -29,7 +29,7 @@ Projeto consumindo API,yahoo do clima e tempo.
 
 Toda aplicação, foco foi em composição usando o principio design de Software Atomics [desing Atomics](https://atomicdesign.bradfrost.com/chapter-2/) </br>
 
-UUtiizei  [SVG chart](https://github.com/JesperLekland/react-native-svg-charts) para criação dos gráficos, meu array</br>
+Utiizei  [SVG chart](https://github.com/JesperLekland/react-native-svg-charts) para criação dos gráficos, meu array</br>
  weekDay conjunto de strings,formatLabel aceita apenas numero </br>
 entao usei o indice do data que contem os numeros da temperatura é utilizei como parâmetro no weekDay,</br>
 assim retorno os dias da semana de acordo com o índice da temperatura, garantindo fidelidade nos dado
