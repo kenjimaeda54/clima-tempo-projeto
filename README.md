@@ -7,14 +7,18 @@ Projeto consumindo API,yahoo do clima e tempo.
 ## Tabelas de conteudos 
 * Visão geral
   * <a href='#Desafio' >  Desafio </a>
-  * <a href='#Construção' >  Construção </a>   
+  * <a href='#Construção' >  Construção </a> 
+  * <a href="#Figma> Figma </a>  
   * <a href='#o-que-eu-aprendi' >  Aprendizado </a>
   * <a href='#Feature' >  Feature </a>
   * <a href='#Dependencias'> Dependencias </a>
 
 ## Visão Geral
 ## Desafio
-- Criar uma aplicação aonde usuário perceba os campos interativos, retorne o clima atual e previsão para os próximos dois dias
+- Criar uma aplicação aonde usuário perceba os campos interativos, retorne o clima atual e previsão para os próximos dois dias.
+
+##Figma
+  [figma](https://www.figma.com/file/jz99HN9cFEIbUCcHc710fl/clima-tempo?node-id=0%3A1)
 
 ## Construção
   - React
